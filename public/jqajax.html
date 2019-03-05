@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jQuery的ajax请求</title>
+    <!-- 引入jQuery -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.3/jquery.js"></script>
+
+</head>
+
+<body>
+    <input type="button" value="jquery获取后台数据GET" id="getBtn">
+    <input type="button" value="jquery获取后台数据POST" id="postBtn">
+    <input type="button" value="jquery获取后台数据AJAX" id="ajaxBtn">
+    <input type="button" value="jquery获取后台数据getJSON" id="getJSONBtn">
+    <input type="button" value="jquery获取后台数据getScript" id="getScriptBtn">
+
+    <script>
+        //全局的方法
+        function callback_msg(val){
+            console.log( "来自服务器端的数据：%s",val );
+        }
+
+
+        $(function () {
+            //  #region     关于getScript
+            $( "#getScriptBtn" ).on( "click",function(){
+                //  下载服务器端的js脚本，并立即执行
+                $.getScript( "js/a.js",function(data){
+                    console.log(data);
+                } );
+            } );
+            //  #endregion
+
+
+            //  #region     用getJSON方法请求
+            $( "#getJSONBtn" ).on( "click",function(){
+                $.getJSON( "user.json","",function(data){
+                    console.log( data );
+                    console.log( data.id );
+                } );
+            } );
+            //  #endregion
+
+            //  #region     用ajax方法请求
+            $( "#ajaxBtn" ).on( "click",function(){
+                //  通过$.ajax()方法发送ajax请求
+                $.ajax({
+                    async:true,
+                    url:"/api/user",
+                    type:"POST",
+                    data:"id=9&name=345",
+                    success:function( data ){
+                        console.log( data );
+                    }
+                });
+            } );
+            //  #endregion
+
+            //  #region     用get的方法请求
+            $("#getBtn").on("click", function (e) {
+                //  jQuery 的ajax方法 get()  post()  getJSON()  load()
+                $.get("./user.json?id=9", "name=222", function (data, status, xhr) {
+                    console.log(data.id);
+                    console.log(status);
+                }, "json");
+
+
+                //简单写法
+                $.get("./user.json", function (data) {
+                    console.log(data);
+                });
+            });
+            //  #endregion
+
+            //  #region     用post方法请求
+            $("#postBtn").on("click", function () {
+                $.post("api/user", { id: 344, name: "laoma" }, function (data) {
+                    console.log(data);
+                });
+            });
+
+            //  #endregion
+        });
+
+    </script>
+</body>
+
+</html>

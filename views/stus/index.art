@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>学生异步列表</title>
+    <!-- 引入bulma库 -->
+    <link href="https://cdn.bootcss.com/bulma/0.7.2/css/bulma.css" rel="stylesheet">
+    <!-- 引入jQuery -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.3/jquery.js"></script>
+    <!-- 引入simplePagination库 -->
+    <script src="/lib/simplePagination/jquery.simplePagination.js"></script>
+    <link rel="stylesheet" href="/lib/simplePagination/simplePagination.css">
+    <!-- 引入magnific-popup库 -->
+    <script src="/lib/magnific-popup/jquery.magnific-popup.js"></script>
+    <link rel="stylesheet" href="/lib/magnific-popup/magnific-popup.css">
+
+    <!-- 引入simplePagination库 -->
+    <script src="/lib/simplePagination/jquery.simplePagination.js"></script>
+    <link rel="stylesheet" href="/lib/simplePagination/simplePagination.css">
+    <style>
+        .pop-dialog {
+            position: relative;
+            background: #FFF;
+            padding: 20px;
+            width: auto;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title is-2">标题。。。。。。。。。。。。</h1>
+    <a href="#addDialog" id="btnAdd" class="title is-1 has-text-primary">添加</a>
+    <!-- S =>显示用户列表 -->
+    <table class="table is-bordered is-striped table is-hoverable">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>电话</th>
+                <th>邮箱</th>
+                <th>地址</th>
+                <th>邮编</th>
+                <th>生日</th>
+                <th>编辑</th>
+                <th>修改</th>
+            </tr>
+        </thead>
+        <tbody id="tbData">
+
+        </tbody>
+    </table>
+
+    <div id="pagerBox"></div>
+    <!-- E =>显示用户列表 -->
+
+    <!-- S => 添加用户的的层 -->
+    <div id="addDialog" class="pop-dialog mfp-hide">
+        <h3 class="title is-3">添加用户信息</h3>
+        <form id="frmAdd">
+            <table>
+                <tr>
+                    <td>用户名：</td>
+                    <td>
+                        <input type="text" name="name" id="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>电话:</td>
+                    <td>
+
+                        <input type="number" name="phone" id="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>邮箱：</td>
+                    <td>
+
+                        <input type="text" name="email" id="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>地址：</td>
+                    <td>
+
+                        <input type="text" name="address" id="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>邮编：</td>
+                    <td>
+
+                        <input type="number" name="zip" id="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>生日：</td>
+                    <td>
+
+                        <input type="date" name="birthday" id="" value="2017-09-16">
+                    </td>
+                </tr>
+            </table>
+            <hr>
+            <input class="button" type="button" value="添加" id="btnSubmitAddDialog">
+            <input class="button" type="button" value="取消" id="btnCloseAddDialog">
+        </form>
+        <hr>
+        <input type="button" value="关闭" id="btnCloseAddDialog">
+    </div>
+    <!-- E => 添加用户的的层 -->
+
+
+    <!-- S => 修改弹出用户的的层 -->
+    <div id="editDialog" class="pop-dialog mfp-hide">
+        <h3 class="title is-3">修改用户信息</h3>
+        <form id="frmEdit">
+            <table>
+                <input type="hidden" name="id" id="editId">
+                <tr>
+                    <td>用户名：</td>
+                    <td>
+                        <input type="text" required name="name" id="editName">
+                    </td>
+                </tr>
+                <tr>
+                    <td>电话:</td>
+                    <td>
+
+                        <input type="number" name="phone" id="editPhone">
+                    </td>
+                </tr>
+                <tr>
+                    <td>邮箱：</td>
+                    <td>
+
+                        <input type="text" name="email" id="editEmail">
+                    </td>
+                </tr>
+                <tr>
+                    <td>地址：</td>
+                    <td>
+
+                        <input type="text" name="address" id="editAddress">
+                    </td>
+                </tr>
+                <tr>
+                    <td>邮编：</td>
+                    <td>
+
+                        <input type="number" name="zip" id="editZip">
+                    </td>
+                </tr>
+                <tr>
+                    <td>生日：</td>
+                    <td>
+
+                        <input type="date" name="birthday" id="editBirthday" value="2017-09-16">
+                    </td>
+                </tr>
+            </table>
+            <hr>
+            <input class="button" type="button" value="修改" id="btnSubmitEditDialog">
+            <input class="button" type="button" value="取消" id="btnCloseEditDialog">
+        </form>
+        <hr>
+        <!-- <input type="button" value="关闭" id="btnCloseAddDialog"> -->
+    </div>
+    <!-- E => 修改弹出用户的的层 -->
+
+
+
+
+    <script>
+        var currPage = 1;
+        $(function () {
+            //  初始化表格数据
+            initTableData();
+            //  利用事件委托的方式去绑定删除用户的事件
+            initBindDelEvent();
+            //  初始化
+            initAddDialog();
+            //  初始化给编辑按钮添加事件
+            initBindEditEvent();
+        });
+
+
+        //  #region 初始化添加的模态对话框
+        function initAddDialog() {
+            // 给超级连接添加magnificPopup初始化方法。
+            //  初始化弹出层
+            $('#btnAdd').magnificPopup({
+                type: 'inline',         // 行内的类型，类比图片的模式
+                closeBtnInside: true,   // 显示关闭按钮
+                closeOnBgClick: false  // 点击遮罩透明背景关闭弹出层
+            });
+            //  绑定取消的按钮
+            $("#btnCloseAddDialog").on("click", function (e) {
+                $("#btnAdd").magnificPopup("close");
+            });
+
+            //  初始化添加按钮的点击事件    
+            $("#btnSubmitAddDialog").on("click", function () {
+                //  拿到整个表单的内容发送到后台
+                $.ajax({
+                    url: "/api/useradd",
+                    data: $("#frmAdd").serialize(),
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        // console.log( data );
+                        if (data.code == 1) {
+                            //  添加成功  关闭对话框
+                            $("#btnAdd").magnificPopup("close");
+                            //  初始化页面的表格数据
+                            initTableData();
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+                });
+            });
+        }
+        //  #endregion
+
+        //  #region 利用事件委托的方式去绑定删除用户的事件
+        function initBindDelEvent() {
+            //  利用事件委托的方式去绑定事件
+            $("#tbData").on("click", ".delBtn", function () {
+                // alert( $(this).attr("uid") );
+                //  向后台发送ajax骑牛，删除用户数据  id
+                var id = $(this).attr("uid");
+                var aDom = $(this);
+
+                if (!confirm("您确定要删除数据" + id + "吗？")) {
+                    return;
+                }
+                $.ajax({
+                    url: "/api/deluser/" + id,
+                    data: "",
+                    type: "POST",
+                    success: function (data) {
+                        if (data.code == 1) {
+                            aDom.parent().parent().fadeOut();
+                            // alert("删除成功");
+                            //  重新加载表格的数据
+                            initTableData();
+                        } else {
+                            alert("删除失败" + data.msg);
+                        }
+                    }
+                });
+            });
+        }
+        //  #endregion
+
+        //  #region 加载表格数据的函数
+        function initTableData(page,size) {
+            page = page || currPage || 1;   //  兼容添加和修改的数据
+            size = size || 10;
+            $.getJSON("/api/pageuser",{page:page,size:size}, function (retData) {
+                let strTemp = "";
+                // retData数据 {page:3,size:10,count:100,data:{}} 
+                for (var i = 0; i < retData.data.length; i++) {
+                    //  <tr><td></td></tr>
+                    strTemp += "<tr>";
+                    strTemp += "<td>" + retData.data[i].id + "</td>";
+                    strTemp += "<td>" + retData.data[i].name + "</td>";
+                    strTemp += "<td>" + retData.data[i].phone + "</td>";
+                    strTemp += "<td>" + retData.data[i].email + "</td>";
+                    strTemp += "<td>" + retData.data[i].address + "</td>";
+                    strTemp += "<td>" + retData.data[i].zip + "</td>";
+                    strTemp += "<td>" + retData.data[i].birthday + "</td>";
+                    strTemp += "<td><a class='editBtn' uid='" + retData.data[i].id + "' href='#editDialog'>编辑</a>  <a class='delBtn' uid='" + retData.data[i].id + "' href='#'>删除</a></td>";
+                    strTemp += "</tr>";
+                }
+                $("#tbData").html(strTemp);
+
+                $('.editBtn').magnificPopup({
+                    type: 'inline',         // 行内的类型，类比图片的模式
+                    closeBtnInside: true,   // 显示关闭按钮
+                    closeOnBgClick: false  // 点击遮罩透明背景关闭弹出层
+                });
+
+
+                //  初始化分页控件数据
+                //初始化分页的标签
+            $("#pagerBox").pagination({
+                currentPage:retData.page,
+                items: retData.count,
+                itemsOnPage: retData.size,
+                cssStyle: 'light-theme',
+                prevText:"上一页",
+                nextText:"下一页",
+                onPageClick:function(pageNum){
+                    currPage = pageNum;
+                    initTableData( pageNum,10 );
+                }
+            });
+                //  不推荐使用
+                // $(".delBtn").on( "click",function () {
+                //     alert( $(this).attr("uid") );
+                // } );
+
+                //  动态创建的元素，绑定事件两种方法
+                //  第一种：标签加载到页面上去之后，绑定点击事件
+                //  第二种：使用事件委托的方式去绑定事件
+            });
+        }
+        //  #endregion
+
+        //  #region 
+        function initBindEditEvent() {
+            $("#tbData").on("click", ".editBtn", function (e) {
+                // alert( $(this).attr("uid") );
+                //  找到显示列表中的数据
+                var $Tr = $(this).parent().parent();
+
+                // //  找到修改列表中的内容并且赋值  自己写的
+                // for( var i=0;i < $Tr.find("td").length-1;i++  ){
+                //     $("#frmEdit").find("input").eq(i).val( $Tr.find("td").eq(i).text());
+                // }
+
+                //  id
+                console.log($Tr.find("td").eq(0).text());
+                $("#editId").val($Tr.find("td").eq(0).text());
+                //  姓名
+                console.log($Tr.find("td").eq(1).text());
+                $("#editName").val($Tr.find("td").eq(1).text());
+                //  电话
+                console.log($Tr.find("td").eq(2).text());
+                $("#editPhone").val($Tr.find("td").eq(2).text());
+                //  邮箱
+                console.log($Tr.find("td").eq(3).text());
+                $("#editEmail").val($Tr.find("td").eq(3).text());
+                //  地址
+                console.log($Tr.find("td").eq(4).text());
+                $("#editAddress").val($Tr.find("td").eq(4).text());
+                //  邮编
+                console.log($Tr.find("td").eq(5).text());
+                $("#editZip").val($Tr.find("td").eq(5).text());
+                //  生日
+                console.log($Tr.find("td").eq(6).text());
+                $("#editBirthday").val($Tr.find("td").eq(6).text());
+            });
+            //  给取消按钮绑定事件
+            $("#btnCloseEditDialog").on("click", function (e) {
+                $.magnificPopup.close();
+            });
+            //  给修改按钮绑定事件
+            $("#btnSubmitEditDialog").on("click", function (e) {
+                //  把用户修改改完的数据，提交到后台进行修改，然后判断后台返回的数据是否修改成功，如果成功则挂壁对话框
+                $.ajax({
+                    url: "/api/userupdate",
+                    data: $("#frmEdit").serialize(),
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code == 1) {
+                            $.magnificPopup.close();
+                            initTableData();
+                        } else {
+                            alert("修改失败" + data.msg);
+                        }
+                    }
+                });
+            });
+        }
+        //  #endregion
+    </script>
+</body>
+
+</html>

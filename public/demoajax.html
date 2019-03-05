@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ajax</title>
+    <script src="./js/ajaxHelper.js"></script>
+</head>
+<body>
+    <input type="button" value="GET获取后台数据" id="getBtn">
+    <input type="button" value="POST获取后台数据" id="postBtn">
+
+    <script>
+    (function(){
+        window.onload = function(){
+            var btnGet = document.getElementById( "getBtn" );
+            btnGet.onclick = function(){
+                ajaxGet( "/user.json",function(data){
+                    console.log( data );
+                } );
+            };
+
+             var btnPost = document.getElementById( "postBtn" );
+             btnPost.onclick = function(){
+                ajaxPost( "/api/user", "id=9&name=laoma" ,function(data){
+                    console.log( data );
+                    //后台返回的数据就是字符串类型，要转成json，必须自己手动转换
+                    var user = JSON.parse(data);
+                    console.log( user.id );
+                    console.log( user.name );
+                } );
+            };
+        };
+    })();
+    </script>
+</body>
+</html>

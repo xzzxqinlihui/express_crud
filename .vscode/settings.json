@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.art":"html",
+        "*.html":"html"
+    }
+}

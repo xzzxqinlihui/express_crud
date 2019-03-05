@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>用户列表</title>
+    <!-- 引入bulma库 -->
+    <link href="https://cdn.bootcss.com/bulma/0.7.2/css/bulma.css" rel="stylesheet">
+    <!-- 引入jQuery -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.3/jquery.js"></script>
+    <!-- 引入simplePagination库 -->
+    <script src="/lib/simplePagination/jquery.simplePagination.js"></script>
+    <link rel="stylesheet" href="/lib/simplePagination/simplePagination.css">
+</head>
+
+<body>
+    <h1 class="title is-1 has-text-primary">案例学习</h1>
+
+    <a href="/user/add" class="button is-large is-primary">添加</a>
+    <table class="table is-bordered is-striped table is-hoverable">
+        <tr>
+            <th>序号</th>
+            <th>id</th>
+            <th>姓名</th>
+            <th>电话</th>
+            <th>邮箱</th>
+            <th>地址</th>
+            <th>邮编</th>
+            <th>生日</th>
+            <th>编辑</th>
+            <th>修改</th>
+        </tr>
+        {{each users as value index}}
+        <!-- <p>{{index}}----{{value.id}}----{{value.name}}----{{value.phone}}-----{{value.email}}----{{value.address}}-----{{value.zip}}-----{{value.birthday}}</p> -->
+        <tr>
+            <td>{{index}}</td>
+            <td>{{value.id}}</td>
+            <td>{{value.name}}</td>
+            <td>{{value.phone}}</td>
+            <td>{{value.email}}</td>
+            <td>{{value.address}}</td>
+            <td>{{value.zip}}</td>
+            <td>{{value.birthday}}</td>
+            <td><a class="del" uid="{{value.id}}" href="/user/del?id={{value.id}}">删除</a></td>
+            <td><a uid="{{value.id}}" href="/user/edit?id={{value.id}}">修改</a></td>
+        </tr>
+        {{/each}}
+    </table>
+
+    <div class="pager"></div>
+
+    <script>
+
+        $(function () {
+            //  给删除的按钮绑定点击事件
+            $(".del").on("click", function (e) {
+                if (!confirm("您确认要删除" + $(this).attr("uid") + "吗")) {
+                    //用户取消
+                    e.stopPropagation();    //阻止冒泡
+                    e.preventDefault(); //取消默认行为
+                }
+
+
+            });
+
+            //初始化分页的标签
+            $(".pager").pagination({
+                currentPage:"{{page}}",
+                items: "{{count}}",
+                itemsOnPage: 10,
+                cssStyle: 'light-theme',
+                prevText:"上一页",
+                nextText:"下一页",
+                onPageClick:function(pageNumber, event){
+                    window.location.href = "/user/list?page=" + pageNumber +"&size=10"
+                }
+            });
+
+        });
+    </script>
+</body>
+
+</html>
